@@ -1,4 +1,4 @@
-// const ListNode = require('../extensions/list-node');
+const ListNode = require('../extensions/list-node');
 /**
  * Implement the Queue with a given interface via linked list (use ListNode extension above).
  *
@@ -11,17 +11,50 @@
  *
  */
 
+const listFromArr = (arr) => {
+  const [first, ...rest] = arr;
+  const node = new ListNode(first);
+  node.next = (rest.length !== 0) ? listFromArr(rest) : null;
+  return node;
+};
+
+function removeKFromList(l, k) {
+  const arrFromListWithoutInt = (list, int, acc = []) => {
+    if (list.value !== int) {
+      acc.push(list.value);
+    }
+    if (list.next !== null) {
+      arrFromListWithoutInt(list.next, int, acc);
+    }
+    return acc;
+  };
+  const arr = arrFromListWithoutInt(l, k);
+  return listFromArr(arr);
+}
+
 class Queue {
-  get size() {
-    throw new Error('Not implemented');
+  constructor() {
+    this.node = null;
+    this.values = [];
   }
 
-  enqueue(/* element */) {
-    throw new Error('Not implemented');
+  get size() {
+    return this.values.length;
+  }
+
+  enqueue(element) {
+    const lastNode = this.node;
+    this.node = new ListNode(element);
+    this.node.next = lastNode;
+    this.values.push(this.node.value);
   }
 
   dequeue() {
-    throw new Error('Not implemented');
+    const deleted = this.node;
+    const beginPoint = this.values[0];
+    this.node = removeKFromList(deleted, beginPoint);
+    this.values.splice(0, 1);
+    return beginPoint;
   }
 }
 
